@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Umidade e Temperatura</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+        h1 {
+            text-align: center;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            font-size: 16px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        input[type="datetime-local"] {
+            width: 96%;
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        button {
+            background-color: #007BFF;
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e9f7fd;
+            border: 1px solid #b8e0f8;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Controle de Umidade e Temperatura</h1>
+
+    <div class="container">
+        <label for="dataHora">Selecione a data e hora:</label>
+        <input type="datetime-local" id="dataHora" name="dataHora">
+
+        <button id="verificarButton">Verificar</button>
+
+        <div id="resultado" class="result"></div>
+    </div>
+
+    <script>
+        document.getElementById("verificarButton").addEventListener("click", function() {
+            const dataHora = document.getElementById("dataHora").value;
+
+            if (!dataHora) {
+                alert("Por favor, selecione uma data e hora.");
+                return;
+            }
+
+            console.log("Data e hora selecionada:", dataHora);
+
+            // Envia a data e hora para o servidor
+            fetch('/verificar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ dataHora: dataHora })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    document.getElementById("resultado").innerHTML = `<strong>${data.message}</strong>`;
+                } else {
+                    // Exibe os dados de umidade e temperatura retornados
+                    let resultHTML = "<h3>Dados encontrados:</h3><ul>";
+                    data.forEach(item => {
+                        resultHTML += `<li>Temperatura: ${item.temperatura}°C | Umidade: ${item.umidade}%</li>`;
+                    });
+                    resultHTML += "</ul>";
+                    document.getElementById("resultado").innerHTML = resultHTML;
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao buscar dados:', error);
+                document.getElementById("resultado").innerHTML = `<strong>Erro ao buscar dados. Tente novamente mais tarde.</strong>`;
+            });
+        });
+    </script>
+
+</body>
+</html>
