@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "445982298219",
+    "project_id": "tempumidade-98e64",
+    "storage_bucket": "tempumidade-98e64.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:445982298219:android:82a4b01a7d36489132212e",
+        "android_client_info": {
+          "package_name": "com.example.mp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCODIFUPeFftodwTbrx-54x2lpvaN6NjDM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
