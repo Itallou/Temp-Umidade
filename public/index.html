@@ -27,7 +27,7 @@
             margin-bottom: 10px;
             display: block;
         }
-        input[type="datetime-local"] {
+        input[type="date"] {
             width: 96%;
             padding: 10px;
             font-size: 16px;
@@ -61,53 +61,64 @@
     <h1>Controle de Umidade e Temperatura</h1>
 
     <div class="container">
-        <label for="dataHora">Selecione a data e hora:</label>
-        <input type="datetime-local" id="dataHora" name="dataHora">
-
+        <label for="dataHora">Selecione uma data:</label>
+        <input type="date" id="dataHora" name="dataHora">
+    
         <button id="verificarButton">Verificar</button>
-
+        <button id="verTodosButton">Ver Todos</button> <!-- Botão "Ver Todos" -->
+    
         <div id="resultado" class="result"></div>
     </div>
-
+    
     <script>
         document.getElementById("verificarButton").addEventListener("click", function() {
             const dataHora = document.getElementById("dataHora").value;
-
+    
             if (!dataHora) {
                 alert("Por favor, selecione uma data e hora.");
                 return;
             }
-
-            console.log("Data e hora selecionada:", dataHora);
-
-            // Envia a data e hora para o servidor
+    
             fetch('/verificar', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ dataHora: dataHora })
             })
             .then(response => response.json())
             .then(data => {
-                if (data.message) {
-                    document.getElementById("resultado").innerHTML = `<strong>${data.message}</strong>`;
-                } else {
-                    // Exibe os dados de umidade e temperatura retornados
-                    let resultHTML = "<h3>Dados encontrados:</h3><ul>";
-                    data.forEach(item => {
-                        resultHTML += `<li>Temperatura: ${item.temperatura}°C | Umidade: ${item.umidade}%</li>`;
-                    });
-                    resultHTML += "</ul>";
-                    document.getElementById("resultado").innerHTML = resultHTML;
-                }
+                displayResults(data);
             })
             .catch(error => {
                 console.error('Erro ao buscar dados:', error);
                 document.getElementById("resultado").innerHTML = `<strong>Erro ao buscar dados. Tente novamente mais tarde.</strong>`;
             });
         });
-    </script>
+    
+        document.getElementById("verTodosButton").addEventListener("click", function() {
+            fetch('/ver-todos')
+            .then(response => response.json())
+            .then(data => {
+                displayResults(data);
+            })
+            .catch(error => {
+                console.error('Erro ao buscar todos os dados:', error);
+                document.getElementById("resultado").innerHTML = `<strong>Erro ao buscar dados. Tente novamente mais tarde.</strong>`;
+            });
+        });
+    
+        function displayResults(data) {
+            if (data.message) {
+                document.getElementById("resultado").innerHTML = `<strong>${data.message}</strong>`;
+            } else {
+                let resultHTML = "<h3>Dados encontrados:</h3><ul>";
+                data.forEach(item => {
+                    resultHTML += `<li>Data: ${item.dataHora} | Temperatura: ${item.temperatura}°C | Umidade: ${item.umidade}%</li>`;
+                });
+                resultHTML += "</ul>";
+                document.getElementById("resultado").innerHTML = resultHTML;
+            }
+        }
+    </script>    
 
 </body>
 </html>
