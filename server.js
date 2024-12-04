@@ -23,22 +23,13 @@ function getStartAndEndOfDayUTC3(dateString) {
 }
 
 app.post('/verificar', async (req, res) => {
-    let { dataHora } = req.body;
+    const { date } = req.body;
 
-    console.log("Data recebida:", dataHora);
-
-    const { startOfDay, endOfDay } = getStartAndEndOfDayUTC3(dataHora);
-
-    console.log("Intervalo de consulta (UTC-3):", {
-        inicio: startOfDay.toISOString(),
-        fim: endOfDay.toISOString()
-    });
+    console.log("Data recebida:", date);
 
     try {
-        const snapshot = await db.collection('umidadeTemperatura')
-            .where('dataHora', '>=', admin.firestore.Timestamp.fromDate(startOfDay))
-            .where('dataHora', '<=', admin.firestore.Timestamp.fromDate(endOfDay))
-            .orderBy('dataHora', 'asc') 
+        const snapshot = await db.collection('SensorData')
+            .where('date', '==', date) // Filtro apenas pela data
             .get();
 
         if (snapshot.empty) {
@@ -47,9 +38,7 @@ app.post('/verificar', async (req, res) => {
 
         let data = [];
         snapshot.forEach(doc => {
-            const item = doc.data();
-            item.dataHora = item.dataHora.toDate().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
-            data.push(item);
+            data.push(doc.data());
         });
 
         res.json(data);
@@ -61,8 +50,8 @@ app.post('/verificar', async (req, res) => {
 
 app.get('/ver-todos', async (req, res) => {
     try {
-        const snapshot = await db.collection('umidadeTemperatura')
-            .orderBy('dataHora', 'asc')
+        const snapshot = await db.collection('SensorData')
+            .orderBy('date', 'asc') // Ordena apenas pela data
             .get();
 
         if (snapshot.empty) {
@@ -71,9 +60,7 @@ app.get('/ver-todos', async (req, res) => {
 
         let data = [];
         snapshot.forEach(doc => {
-            const item = doc.data();
-            item.dataHora = item.dataHora.toDate().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
-            data.push(item);
+            data.push(doc.data());
         });
 
         res.json(data);
